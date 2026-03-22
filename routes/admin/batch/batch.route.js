@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const batchController = require("../../../controller/adminController/batchController/batchcontroller");
+const adminMiddleware = require("../../../middlewares/adminMiddleware");
+
+router.use(adminMiddleware);
 
 router.post("/", batchController.createBatch);
 router.get("/", batchController.getAllBatches);

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../../../controller/adminController/userController/usercontroller");
+const adminMiddleware = require("../../../middlewares/adminMiddleware");
+
+router.use(adminMiddleware);
 
 router.get("/", userController.getAllUsers);
 router.post("/", userController.createUser);
