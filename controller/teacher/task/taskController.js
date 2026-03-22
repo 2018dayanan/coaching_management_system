@@ -1,5 +1,7 @@
 const TaskModel = require("../../../models/task_model");
 const BatchModel = require("../../../models/batch_model");
+const EnrollmentModel = require("../../../models/enrollment_model");
+const { sendNotification } = require("../../../services/notification_manager");
 
 // Create a new task
 const createTask = async (req, res) => {
@@ -29,9 +31,26 @@ const createTask = async (req, res) => {
 
         await newTask.save();
 
+        // --- Notification Logic ---
+        // Fetch all active students enrolled in this batch
+        const enrollments = await EnrollmentModel.find({ batch_id, status: 'active' }).select('student_id');
+        const student_ids = enrollments.map(e => e.student_id);
+
+        if (student_ids.length > 0) {
+            await sendNotification({
+                recipients: student_ids,
+                sender_id: teacher_id,
+                title: "New Task Available",
+                message: `Your teacher has assigned a new task: "${title}" for batch: ${batch.name}`,
+                type: 'task',
+                related_id: newTask._id
+            });
+        }
+        // --------------------------
+
         res.status(201).json({
             status: true,
-            message: "Task created successfully",
+            message: "Task created successfully and students notified",
             data: newTask
         });
     } catch (error) {

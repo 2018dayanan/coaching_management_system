@@ -1,6 +1,7 @@
 const EnrollmentModel = require("../../models/enrollment_model");
 const BatchModel = require("../../models/batch_model");
 const UserModel = require("../../models/user_model");
+const { sendNotification } = require("../../services/notification_manager");
 
 // Enroll multiple students into a batch
 const enrollStudents = async (req, res) => {
@@ -57,6 +58,22 @@ const enrollStudents = async (req, res) => {
                 throw insertError; // Re-throw if it is a different kind of error
             }
         }
+
+        // --- Notification Logic ---
+        if (insertedCount > 0) {
+            // If it was a bulk insert, we need to know WHICH students were newly inserted
+            // For simplicity in this logic, we'll notify all IDs passed that were successfully processed
+            // (In a more complex scenario, we'd filter by the result of insertMany)
+            await sendNotification({
+                recipients: student_ids,
+                sender_id: req.userInfo ? req.userInfo.id : null,
+                title: "New Enrollment",
+                message: `You have been successfully enrolled in the batch: ${batch.name}`,
+                type: 'info',
+                related_id: batch._id
+            });
+        }
+        // --------------------------
 
         res.status(201).json({
             status: true,
