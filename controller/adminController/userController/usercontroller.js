@@ -1,5 +1,6 @@
 const UserModel = require("../../../models/user_model");
 const bcrypt = require('bcryptjs');
+const cloudinary = require("../../../config/cloudinary");
 const { sendEmail } = require("../../../services/emailManager");
 const { generateActivationEmailContent } = require("../../../templates/email/statusTemplate");
 
@@ -144,7 +145,33 @@ const updateUser = async (req, res) => {
         if (role) updateData.role = role;
         if (gender) updateData.gender = gender;
         if (date_of_birth) updateData.date_of_birth = date_of_birth;
-        if (profile_picture) updateData.profile_picture = profile_picture;
+        
+        // Handle physical file upload for profile picture
+        if (req.files && req.files.profile_picture) {
+            const mediaFile = req.files.profile_picture;
+            const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+            if (!allowedImageTypes.includes(mediaFile.mimetype)) {
+                return res.status(400).json({ status: false, message: 'Invalid image type for profile picture (Use JPEG, PNG, WEBP, or GIF)' });
+            }
+
+            const base64Media = `data:${mediaFile.mimetype};base64,${mediaFile.data.toString('base64')}`;
+            
+            const uploadOptions = {
+                folder: `user_profiles/${id}`,
+                resource_type: 'image',
+                public_id: `profile_${id}_${Date.now()}`,
+                transformation: [
+                    { width: 500, height: 500, crop: 'limit', quality: 'auto' }
+                ]
+            };
+
+            const result = await cloudinary.uploader.upload(base64Media, uploadOptions);
+            updateData.profile_picture = result.secure_url;
+        } else if (profile_picture) {
+            // Fallback if they passed a direct string URL
+            updateData.profile_picture = profile_picture;
+        }
 
         const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, { new: true }).select('-password_hash');
 
