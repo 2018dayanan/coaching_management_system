@@ -8,6 +8,7 @@ const adminUserRoutes = require("./admin/user/user.route");
 const adminBatchRoutes = require("./admin/batch/batch.route");
 const adminClassRoutes = require("./admin/class/class.route");
 const teacherEnrollRoutes = require("./teacher/enroll.route");
+const teacherTaskRoutes = require("./teacher/task/task.route");
 const adminRouter = express.Router();
 const apiV1Router = express.Router();
 
@@ -21,6 +22,7 @@ adminRouter.use("/classes", adminClassRoutes);
 
 apiV1Router.use("/admin", adminRouter);
 apiV1Router.use("/teacher", teacherEnrollRoutes);
+apiV1Router.use("/teacher/tasks", teacherTaskRoutes);
 
 router.use("/api/v1", apiV1Router);
 
