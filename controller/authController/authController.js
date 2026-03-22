@@ -73,7 +73,7 @@ const register = async (req, res) => {
         const password_hash = await bcrypt.hash(password, 12);
 
         const currentYear = new Date().getFullYear();
-        const latestUser = await UserModel.findOne({ unique_id: new RegExp(`^STD-${currentYear}-`, 'i') }).sort({ createdAt: -1 });
+        const latestUser = await UserModel.findOne({ unique_id: new RegExp(`^STD-${currentYear}-`, 'i') }).sort({ unique_id: -1 });
         let nextSeq = 1;
         if (latestUser && latestUser.unique_id) {
             const parts = latestUser.unique_id.split('-');
