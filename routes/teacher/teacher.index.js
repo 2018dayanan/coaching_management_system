@@ -7,9 +7,12 @@ const enrollRoutes = require('./enroll.route');
 const taskRoutes = require('./task.route');
 const studentRoutes = require('./students.route');
 
+const dashboardRoutes = require('./dashboard.route');
+
 router.use(protect);
 router.use(restrictTo('teacher'));
 
+router.use('/dashboard', dashboardRoutes);
 router.use('/enroll', enrollRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/students', studentRoutes);

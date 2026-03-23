@@ -21,11 +21,15 @@ exports.getMyStudents = catchAsync(async (req, res, next) => {
     for (const enrollment of enrollments) {
         if (!enrollment.student_id) continue;
 
-        const studentId = enrollment.student_id._id.toString();
+        const student = enrollment.student_id;
+        const studentId = student._id.toString();
 
         if (!studentMap.has(studentId)) {
             studentMap.set(studentId, {
-                ...enrollment.student_id.toObject(),
+                _id: student._id,
+                name: student.name,
+                unique_id: student.unique_id,
+                profile_picture: student.profile_picture,
                 enrolled_batches: []
             });
         }
