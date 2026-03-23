@@ -34,7 +34,7 @@ exports.getAllBatches = catchAsync(async (req, res, next) => {
     let query = {};
 
     if (status) query.status = status;
-    
+
     if (search) {
         query.$or = [
             { name: { $regex: search, $options: 'i' } },
@@ -46,6 +46,7 @@ exports.getAllBatches = catchAsync(async (req, res, next) => {
 
     const batches = await Batch.find(query)
         .populate('teacher_id', 'name email unique_id mobile')
+        .populate('enrolled_students', 'name email unique_id profile_picture')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
@@ -69,8 +70,9 @@ exports.getAllBatches = catchAsync(async (req, res, next) => {
 // Get a single batch by ID
 exports.getBatchById = catchAsync(async (req, res, next) => {
     const batch = await Batch.findById(req.params.id)
-        .populate('teacher_id', 'name email unique_id mobile profile_picture');
-    
+        .populate('teacher_id', 'name email unique_id mobile profile_picture')
+        .populate('enrolled_students', 'name email unique_id profile_picture');
+
     if (!batch) {
         return next(new AppError("Batch not found", 404));
     }
@@ -85,7 +87,7 @@ exports.getBatchById = catchAsync(async (req, res, next) => {
 // Update an existing batch
 exports.updateBatch = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const { name, subject, description, teacher_id, start_date, end_date, status } = req.body;
+    const { name, subject, description, teacher_id, start_date, end_date, status, add_students, remove_students } = req.body;
 
     const batch = await Batch.findById(id);
     if (!batch) {
@@ -108,8 +110,30 @@ exports.updateBatch = catchAsync(async (req, res, next) => {
     if (end_date) updateData.end_date = end_date;
     if (status) updateData.status = status;
 
+    // Add students to enrolled_students
+    if (add_students && Array.isArray(add_students) && add_students.length > 0) {
+        for (const studentId of add_students) {
+            const student = await User.findById(studentId);
+            if (!student || student.role !== 'student' || student.is_deleted) {
+                return next(new AppError(`Invalid student ID: ${studentId}. User not found or is not a student.`, 400));
+            }
+        }
+        await Batch.findByIdAndUpdate(id, {
+            $addToSet: { enrolled_students: { $each: add_students } }
+        });
+    }
+
+    // Remove students from enrolled_students
+    if (remove_students && Array.isArray(remove_students) && remove_students.length > 0) {
+        await Batch.findByIdAndUpdate(id, {
+            $pull: { enrolled_students: { $in: remove_students } }
+        });
+    }
+
+    // Apply remaining field updates
     const updatedBatch = await Batch.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
-        .populate('teacher_id', 'name email unique_id');
+        .populate('teacher_id', 'name email unique_id')
+        .populate('enrolled_students', 'name email unique_id profile_picture');
 
     res.status(200).json({
         status: true,

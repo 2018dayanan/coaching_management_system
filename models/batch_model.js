@@ -14,6 +14,11 @@ const batchSchema = new mongoose.Schema({
     start_date: Date,
     end_date: Date,
 
+    enrolled_students: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+
     status: {
         type: String,
         enum: ['active', 'completed'],
