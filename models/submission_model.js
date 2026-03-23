@@ -13,8 +13,19 @@ const submissionSchema = new mongoose.Schema({
         required: true,
     },
 
-    submission_text: String,
-    file_url: String,
+    submission_text: {
+        type: String,
+        trim: true
+    },
+
+    content_html: {
+        type: String,
+        default: ''
+    },
+
+    file_urls: [{
+        type: String
+    }],
 
     submitted_at: {
         type: Date,
@@ -36,5 +47,7 @@ const submissionSchema = new mongoose.Schema({
     }
 
 }, { timestamps: true });
+
+submissionSchema.index({ task_id: 1, student_id: 1 }, { unique: true });
 
 module.exports = mongoose.model('Submission', submissionSchema);
