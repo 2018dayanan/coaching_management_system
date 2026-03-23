@@ -114,7 +114,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 // Update user details
 exports.updateUser = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const { name, mobile, role, gender, date_of_birth, profile_picture } = req.body;
+    const { name, mobile, role, gender, date_of_birth, profile_picture, status } = req.body;
 
     const user = await User.findById(id);
     if (!user || user.is_deleted) {
@@ -127,11 +127,27 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     if (role) updateData.role = role;
     if (gender) updateData.gender = gender;
     if (date_of_birth) updateData.date_of_birth = date_of_birth;
-    
+
+    if (status) {
+        if (!['active', 'inactive'].includes(status)) {
+            return next(new AppError("Invalid status value", 400));
+        }
+
+        if (status === 'active' && user.status !== 'active') {
+            const emailContent = generateActivationEmailContent(user.name, user.unique_id);
+            sendEmail({
+                to: user.email,
+                subject: "Your Coaching Account is Now Active!",
+                html: emailContent
+            });
+        }
+        updateData.status = status;
+    }
+
     if (req.files && req.files.profile_picture) {
         const mediaFile = req.files.profile_picture;
         const base64Media = `data:${mediaFile.mimetype};base64,${mediaFile.data.toString('base64')}`;
-        
+
         const uploadOptions = {
             folder: `user_profiles/${id}`,
             resource_type: 'image',
