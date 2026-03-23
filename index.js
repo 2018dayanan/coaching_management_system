@@ -10,7 +10,20 @@ const app = express();
 const port = process.env.PORT || 3022;
 
 db();
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : [];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: Origin '${origin}' is not allowed.`));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
