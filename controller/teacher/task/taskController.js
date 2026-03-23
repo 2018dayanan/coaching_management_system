@@ -7,7 +7,7 @@ const { sendNotification } = require("../../../services/notification_manager");
 const createTask = async (req, res) => {
     try {
         const { title, description, subject, batch_id, assigned_date, due_date, attachment_url } = req.body;
-        const teacher_id = req.userInfo.id; // Comes safely from teacherMiddleware
+        const teacher_id = req.userInfo.userId; // Comes safely from teacherMiddleware
 
         if (!title || !batch_id) {
             return res.status(400).json({ status: false, message: "Title and batch_id are required." });
@@ -62,7 +62,7 @@ const createTask = async (req, res) => {
 // Get all tasks for the logged-in teacher
 const getAllTasks = async (req, res) => {
     try {
-        const teacher_id = req.userInfo.id;
+        const teacher_id = req.userInfo.userId;
         const { batch_id } = req.query;
 
         let query = { teacher_id };
@@ -109,7 +109,7 @@ const updateTask = async (req, res) => {
     try {
         const { id } = req.params;
         const { title, description, subject, batch_id, assigned_date, due_date, attachment_url } = req.body;
-        const teacher_id = req.userInfo.id;
+        const teacher_id = req.userInfo.userId;
 
         // Ensure task belongs to the logged-in teacher before updating
         const task = await TaskModel.findOne({ _id: id, teacher_id });
@@ -144,7 +144,7 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
     try {
         const { id } = req.params;
-        const teacher_id = req.userInfo.id;
+        const teacher_id = req.userInfo.userId;
 
         // Ensure task belongs to the logged-in teacher before deleting
         const deletedTask = await TaskModel.findOneAndDelete({ _id: id, teacher_id });
