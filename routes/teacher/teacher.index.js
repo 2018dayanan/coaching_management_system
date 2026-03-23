@@ -9,12 +9,14 @@ const studentRoutes = require('./students.route');
 
 const dashboardRoutes = require('./dashboard.route');
 const batchRoutes = require('./batch.route');
+const classRoutes = require('./class.route');
 
 router.use(protect);
 router.use(restrictTo('teacher'));
 
 router.use('/dashboard', dashboardRoutes);
 router.use('/batches', batchRoutes);
+router.use('/classes', classRoutes);
 router.use('/enroll', enrollRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/students', studentRoutes);
