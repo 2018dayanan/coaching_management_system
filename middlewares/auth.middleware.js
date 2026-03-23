@@ -15,7 +15,6 @@ const protect = catchAsync(async (req, res, next) => {
         return next(new AppError('You are not logged in! Please log in to get access.', 401));
     }
 
-    // Verify token
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         

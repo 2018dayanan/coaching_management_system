@@ -2,14 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-const db = require("./db/db");
+const connectDB = require("./config/db.config");
 const routes = require("./routes");
 const AppError = require("./utils/appError");
-const errorMiddleware = require("./middlewares/errorMiddleware");
+const errorMiddleware = require("./middlewares/error.middleware");
 const app = express();
 const port = process.env.PORT || 3022;
 
-db();
+connectDB();
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : [];

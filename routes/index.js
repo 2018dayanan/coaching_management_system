@@ -8,10 +8,8 @@ const userRoutes = require("./user/user.index");
 
 const apiV1Router = express.Router();
 
-// General Authentication (Login, OTP)
 apiV1Router.use("/auth", authRoutes);
 
-// Role-based routes
 apiV1Router.use("/admin", adminRoutes);
 apiV1Router.use("/teacher", teacherRoutes);
 apiV1Router.use("/user", userRoutes);
