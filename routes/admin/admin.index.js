@@ -7,6 +7,7 @@ const userManagementRoutes = require('./user/user.route');
 const batchManagementRoutes = require('./batch/batch.route');
 const classManagementRoutes = require('./class/class.route');
 const authRoutes = require('./auth/auth.routes');
+const dashboardController = require('../../controller/admin/dashboard.controller');
 
 router.use('/auth', authRoutes);
 
@@ -16,5 +17,6 @@ router.use(restrictTo('SUPER_ADMIN'));
 router.use('/users', userManagementRoutes);
 router.use('/batches', batchManagementRoutes);
 router.use('/classes', classManagementRoutes);
+router.get('/dashboard', dashboardController.getDashboardStats);
 
 module.exports = router;
