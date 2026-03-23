@@ -40,3 +40,18 @@ exports.adminLogin = catchAsync(async (req, res, next) => {
         }
     });
 });
+
+exports.getAdminProfile = catchAsync(async (req, res, next) => {
+    const adminId = req.user.adminId;
+
+    const admin = await Admin.findById(adminId).select('-password');
+    if (!admin) {
+        return next(new AppError("Admin not found", 404));
+    }
+
+    res.status(200).json({
+        status: true,
+        message: "Admin profile fetched successfully",
+        data: admin
+    });
+});
