@@ -5,18 +5,15 @@ const AdminModel = require('../models/admin_model');
 
 const seedAdmins = async () => {
     try {
-        // Connect to MongoDB
         await mongoose.connect(process.env.MONGODB_URL);
         console.log('Connected to database for seeding admins...');
 
-        // Check if super admin already exists
         const existingSuperAdmin = await AdminModel.findOne({ role: 'SUPER_ADMIN' });
         if (existingSuperAdmin) {
             console.log('Super admin already exists. Skipping seeding...');
             process.exit(0);
         }
 
-        // Admin data to seed
         const adminsData = [
             {
                 name: 'Super Admin',
@@ -36,7 +33,6 @@ const seedAdmins = async () => {
             }
         ];
 
-        // Hash passwords and create admins
         for (const adminData of adminsData) {
             const hashedPassword = await bcrypt.hash(adminData.password, 12);
 
@@ -58,5 +54,4 @@ const seedAdmins = async () => {
     }
 };
 
-// Run the seed function
 seedAdmins();

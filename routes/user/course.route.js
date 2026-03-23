@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const courseController = require("../../controller/user/course/courseController");
-const authMiddleware = require("../../middlewares/authMiddleware");
-
-// Student authentication required
-router.use(authMiddleware);
+const courseController = require("../../controller/user/course.controller");
 
 router.get("/", courseController.getMyEnrolledCourses);
 

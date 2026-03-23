@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const academicController = require("../../controller/user/academicDetail/academicController");
-const authMiddleware = require("../../middlewares/authMiddleware");
-
-router.use(authMiddleware);
+const academicController = require("../../controller/user/academic.controller");
 
 router.post("/", academicController.createAcademicDetail);
 router.get("/", academicController.getMyAcademicDetails);

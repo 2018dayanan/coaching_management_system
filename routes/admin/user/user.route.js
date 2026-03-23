@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../../../controller/adminController/userController/usercontroller");
-const adminMiddleware = require("../../../middlewares/adminMiddleware");
+const userController = require("../../../controller/admin/user.controller");
 
-router.use(adminMiddleware);
-
-router.get("/", userController.getAllUsers);
 router.post("/", userController.createUser);
+router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUserById);
 router.patch("/:id", userController.updateUser);
 router.patch("/status/:id", userController.updateUserStatus);

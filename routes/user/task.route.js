@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const taskController = require("../../controller/user/task/taskController");
-const authMiddleware = require("../../middlewares/authMiddleware");
-
-// Student authentication required
-router.use(authMiddleware);
+const taskController = require("../../controller/user/task.controller");
 
 router.get("/", taskController.getMyTasks);
 router.get("/:id", taskController.getTaskById);

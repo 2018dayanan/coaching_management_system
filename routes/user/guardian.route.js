@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const guardianController = require("../../controller/user/guardian/guardianController");
-const authMiddleware = require("../../middlewares/authMiddleware");
-
-// Authentication required for all guardian routes
-router.use(authMiddleware);
+const guardianController = require("../../controller/user/guardian.controller");
 
 router.post("/", guardianController.createGuardian);
 router.get("/", guardianController.getMyGuardians);

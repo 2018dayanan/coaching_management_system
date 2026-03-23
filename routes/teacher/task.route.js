@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const taskController = require("../../../controller/teacher/task/taskController");
-const teacherMiddleware = require("../../../middlewares/teacherMiddleware");
-
-// Ensure all sub-routes here use the teacher middleware logic
-router.use(teacherMiddleware);
+const taskController = require("../../controller/teacher/task.controller");
 
 router.post("/", taskController.createTask);
 router.get("/", taskController.getAllTasks);

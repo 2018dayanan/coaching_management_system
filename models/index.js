@@ -16,4 +16,9 @@ module.exports = {
   Submission,
   Task,
   User,
+  Academic: require('./academic_model'),
+  Guardian: require('./guardian_model'),
+  Notification: require('./notification_model'),
+  Enrollment: require('./enrollment_model'),
+  Batch: require('./batch_model'),
 };
