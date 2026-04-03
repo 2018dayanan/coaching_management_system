@@ -6,12 +6,20 @@ const { generateActivationEmailContent } = require("../../templates/email/status
 const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/appError");
 
+const { validateEmail } = require("../../services/emailValidator.service");
+
 // Admin create a user
 exports.createUser = catchAsync(async (req, res, next) => {
     const { name, email, mobile, password, role, gender } = req.body;
 
     if (gender && !['male', 'female', 'other'].includes(gender.toLowerCase())) {
         return next(new AppError("Invalid gender value.", 400));
+    }
+
+    // Email validation (blocking disposable emails)
+    const emailCheck = await validateEmail(email);
+    if (!emailCheck.isValid) {
+        return next(new AppError(emailCheck.message, 400));
     }
 
     const existingUser = await User.findOne({ email });

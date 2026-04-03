@@ -52,12 +52,20 @@ exports.login = catchAsync(async (req, res, next) => {
     });
 });
 
+const { validateEmail } = require("../services/emailValidator.service");
+
 // Send OTP
 exports.sendOtp = catchAsync(async (req, res, next) => {
     const { email } = req.body;
 
     if (!email) {
         return next(new AppError("Email is required", 400));
+    }
+
+    // Email validation (blocking disposable emails)
+    const emailCheck = await validateEmail(email);
+    if (!emailCheck.isValid) {
+        return next(new AppError(emailCheck.message, 400));
     }
 
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
