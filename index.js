@@ -6,6 +6,8 @@ const connectDB = require("./config/db.config");
 const routes = require("./routes");
 const AppError = require("./utils/appError");
 const errorMiddleware = require("./middlewares/error.middleware");
+const { apiLimiter } = require("./middlewares/rateLimiter.middleware");
+
 const app = express();
 const port = process.env.PORT || 3022;
 
@@ -14,6 +16,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : [];
 
+app.use(apiLimiter);
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
